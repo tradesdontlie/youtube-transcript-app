@@ -1,0 +1,24 @@
+{
+  "name": "youtube-transcript-app",
+  "version": "1.0.0",
+  "description": "Local YouTube transcript fetcher and organizer",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@distube/ytdl-core": "^4.16.12",
+    "@google/generative-ai": "^0.24.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "googleapis": "^152.0.0",
+    "sqlite3": "^5.1.6",
+    "youtube-transcript": "^1.2.1",
+    "youtubei.js": "^14.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

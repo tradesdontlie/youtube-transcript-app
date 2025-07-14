@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionNotebook Workflow Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, button, select {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="text"] {
+            width: 400px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .results {
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .step {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-left: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status.success { background-color: #d4edda; color: #155724; }
+        .status.error { background-color: #f8d7da; color: #721c24; }
+        .status.pending { background-color: #fff3cd; color: #856404; }
+        .loading-spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .method-indicator {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 VisionNotebook Workflow Test</h1>
+    <p>Test the complete YouTube video processing workflow</p>
+
+    <div class="container">
+        <div class="step">
+            <h3>Step 1: Extract Video ID</h3>
+            <div class="input-group">
+                <label for="youtubeUrl">YouTube URL:</label>
+                <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ" value="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                <button onclick="extractVideoId()">Extract Video ID</button>
+                <span id="extractStatus" class="status"></span>
+            </div>
+            <div class="results" id="extractResults"></div>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Fetch Transcript</h3>
+            <div class="input-group">
+                <label for="videoId">Video ID:</label>
+                <input type="text" id="videoId" placeholder="dQw4w9WgXcQ" value="dQw4w9WgXcQ">
+                <button onclick="fetchTranscript()">Fetch Transcript</button>
+                <span id="fetchStatus" class="status"></span>
+            </div>
+            <div class="results" id="fetchResults"></div>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Generate Quiz (Simulated)</h3>
+            <div class="input-group">
+                <label for="numQuestions">Number of Questions:</label>
+                <select id="numQuestions">
+                    <option value="3">3</option>
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                </select>
+                <label for="difficulty">Difficulty:</label>
+                <select id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+                <button onclick="generateQuiz()">Generate Quiz</button>
+                <span id="quizStatus" class="status"></span>
+            </div>
+            <div class="results" id="quizResults"></div>
+        </div>
+
+        <div class="step">
+            <h3>Step 4: Ask Question (Simulated)</h3>
+            <div class="input-group">
+                <label for="question">Question about the video:</label>
+                <input type="text" id="question" placeholder="What is this song about?" value="What is this song about?">
+                <button onclick="askQuestion()">Ask Claude</button>
+                <span id="questionStatus" class="status"></span>
+            </div>
+            <div class="results" id="questionResults"></div>
+        </div>
+
+        <div class="step">
+            <h3>Step 5: Health Check</h3>
+            <div class="input-group">
+                <button onclick="healthCheck()">Check System Health</button>
+                <span id="healthStatus" class="status"></span>
+            </div>
+            <div class="results" id="healthResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data for demonstration
+        let currentTranscript = null;
+
+        function setStatus(id, status, text, showSpinner = false) {
+            const element = document.getElementById(id);
+            element.className = `status ${status}`;
+            element.innerHTML = showSpinner ? 
+                `<span class="loading-spinner"></span> ${text}` : 
+                text;
+        }
+
+        function setResults(id, content) {
+            document.getElementById(id).textContent = content;
+        }
+
+        async function runCommand(command, args = []) {
+            try {
+                // Simulate calling the bridge script
+                console.log(`Running: node scripts/working-bridge.js ${command} ${args.join(' ')}`);
+                
+                // For demo purposes, we'll simulate the API calls
+                // In a real implementation, this would call the bridge script via subprocess
+                
+                if (command === 'extract-id') {
+                    const url = args[0];
+                    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+                    const match = url.match(regex);
+                    if (match) {
+                        return { success: true, video_id: match[1] };
+                    } else {
+                        return { success: false, error: 'Invalid YouTube URL' };
+                    }
+                }
+                
+                if (command === 'fetch') {
+                    // Simulate successful transcript fetch
+                    return {
+                        success: true,
+                        video_info: {
+                            video_id: args[0],
+                            title: "Rick Astley - Never Gonna Give You Up (Official Video)",
+                            channel: "Rick Astley",
+                            duration: null
+                        },
+                        transcript: [
+                            { text: "♪ We're no strangers to love ♪", start: 18.64, duration: 3.24 },
+                            { text: "♪ You know the rules and so do I ♪", start: 22.64, duration: 4.32 },
+                            { text: "♪ Never gonna give you up ♪", start: 43, duration: 2.12 },
+                            { text: "♪ Never gonna let you down ♪", start: 45.2, duration: 1.88 }
+                        ]
+                    };
+                }
+                
+                if (command === 'health') {
+                    return {
+                        success: true,
+                        health: {
+                            pythonBridge: { healthy: true, message: "Python bridge working correctly" },
+                            innertube: { success: true, message: "Innertube initialized successfully" },
+                            youtubeApi: { success: true, message: "YouTube API accessible" },
+                            overallStatus: "healthy"
+                        }
+                    };
+                }
+                
+                return { success: false, error: 'Unknown command' };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function extractVideoId() {
+            const url = document.getElementById('youtubeUrl').value;
+            setStatus('extractStatus', 'pending', 'Extracting video ID...', true);
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, 300)); // Simulate processing
+                const result = await runCommand('extract-id', [url]);
+                
+                if (result.success) {
+                    setStatus('extractStatus', 'success', '✓ Extracted successfully');
+                    document.getElementById('videoId').value = result.video_id;
+                    setResults('extractResults', JSON.stringify(result, null, 2));
+                } else {
+                    setStatus('extractStatus', 'error', '✗ Extraction failed');
+                    setResults('extractResults', JSON.stringify(result, null, 2));
+                }
+            } catch (error) {
+                setStatus('extractStatus', 'error', '✗ Error occurred');
+                setResults('extractResults', `Error: ${error.message}`);
+            }
+        }
+
+        async function fetchTranscript() {
+            const videoId = document.getElementById('videoId').value;
+            const resultsDiv = document.getElementById('fetchResults');
+            
+            setStatus('fetchStatus', 'pending', 'Connecting to YouTube...', true);
+            resultsDiv.innerHTML = '<div class="method-indicator">Trying primary method...</div>';
+            
+            try {
+                // Simulate trying different methods
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                setStatus('fetchStatus', 'pending', 'Fetching transcript data...', true);
+                resultsDiv.innerHTML = '<div class="method-indicator">Using innertube API...</div>';
+                
+                await new Promise(resolve => setTimeout(resolve, 800));
+                const result = await runCommand('fetch', [videoId]);
+                
+                if (result.success) {
+                    setStatus('fetchStatus', 'success', '✓ Transcript fetched successfully');
+                    currentTranscript = result.transcript;
+                    setResults('fetchResults', JSON.stringify(result, null, 2));
+                } else {
+                    setStatus('fetchStatus', 'error', '✗ No transcript available');
+                    setResults('fetchResults', JSON.stringify(result, null, 2));
+                }
+            } catch (error) {
+                setStatus('fetchStatus', 'error', '✗ Fetch failed');
+                setResults('fetchResults', `Error: ${error.message}`);
+            }
+        }
+
+        async function generateQuiz() {
+            if (!currentTranscript) {
+                setStatus('quizStatus', 'error', 'No transcript available');
+                setResults('quizResults', 'Please fetch transcript first');
+                return;
+            }
+
+            const numQuestions = document.getElementById('numQuestions').value;
+            const difficulty = document.getElementById('difficulty').value;
+            
+            setStatus('quizStatus', 'pending', 'Generating quiz with Claude...', true);
+            
+            // Simulate Claude CLI quiz generation
+            setTimeout(() => {
+                const mockQuiz = [
+                    {
+                        question: "What is the main theme of this song?",
+                        options: ["Love and commitment", "Dancing", "Friendship", "Travel"],
+                        correct_answer: 0,
+                        explanation: "The song is about never giving up on someone you love.",
+                        timestamp: 18.64
+                    },
+                    {
+                        question: "What does the singer promise to never do?",
+                        options: ["Give you up", "Sing again", "Dance", "Smile"],
+                        correct_answer: 0,
+                        explanation: "The main refrain is 'Never gonna give you up'.",
+                        timestamp: 43.0
+                    }
+                ];
+
+                setStatus('quizStatus', 'success', '✓ Quiz generated successfully');
+                setResults('quizResults', JSON.stringify(mockQuiz, null, 2));
+            }, 2000);
+        }
+
+        async function askQuestion() {
+            if (!currentTranscript) {
+                setStatus('questionStatus', 'error', 'No transcript available');
+                setResults('questionResults', 'Please fetch transcript first');
+                return;
+            }
+
+            const question = document.getElementById('question').value;
+            setStatus('questionStatus', 'pending', 'Asking Claude...', true);
+            
+            // Simulate Claude CLI response
+            setTimeout(() => {
+                const mockResponse = `Based on the transcript, this song is about unwavering love and commitment. Rick Astley sings about making promises to someone he loves - that he will never give them up, let them down, run around and desert them, make them cry, say goodbye, or tell a lie and hurt them. It's a declaration of eternal loyalty and faithfulness in a relationship. The song became famous not just for its catchy melody but also for the "Rickrolling" internet meme.`;
+
+                setStatus('questionStatus', 'success', '✓ Answer generated');
+                setResults('questionResults', mockResponse);
+            }, 3000);
+        }
+
+        async function healthCheck() {
+            setStatus('healthStatus', 'pending', 'Running system health check...', true);
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                const result = await runCommand('health');
+                
+                if (result.success && result.health.overallStatus === 'healthy') {
+                    setStatus('healthStatus', 'success', '✓ All systems operational');
+                    setResults('healthResults', JSON.stringify(result, null, 2));
+                } else {
+                    setStatus('healthStatus', 'error', '✗ System issues detected');
+                    setResults('healthResults', JSON.stringify(result, null, 2));
+                }
+            } catch (error) {
+                setStatus('healthStatus', 'error', '✗ Health check failed');
+                setResults('healthResults', `Error: ${error.message}`);
+            }
+        }
+
+        // Auto-run health check on page load
+        window.addEventListener('load', () => {
+            setTimeout(healthCheck, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+/* Notebook-style styling for transcript history - Dark Theme Compatible */
+
+.notebook-card {
+  background: linear-gradient(to right, var(--color-card) 0%, var(--color-card) 95%, var(--color-border) 95%, var(--color-border) 100%);
+  border: 1px solid var(--color-border);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  position: relative;
+  padding: 20px 30px 20px 50px;
+  margin: 10px 0;
+  transition: all 0.3s ease;
+}
+
+.notebook-card::before {
+  content: '';
+  position: absolute;
+  left: 30px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-destructive);
+  opacity: 0.7;
+}
+
+.notebook-card::after {
+  content: '';
+  position: absolute;
+  left: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-destructive);
+  box-shadow: 0 0 0 2px var(--color-card);
+}
+
+.notebook-card:hover {
+  transform: translateX(5px);
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(to right, var(--color-accent) 0%, var(--color-accent) 95%, var(--color-border) 95%, var(--color-border) 100%);
+}
+
+.notebook-lines {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 27px,
+    var(--color-border) 27px,
+    var(--color-border) 28px
+  );
+  padding: 10px 0;
+}
+
+.notebook-date {
+  font-family: 'Courier New', monospace;
+  color: var(--color-muted-foreground);
+  font-size: 0.85em;
+  margin-bottom: 5px;
+}
+
+.notebook-title {
+  font-family: 'Georgia', serif;
+  color: var(--color-foreground);
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.notebook-preview {
+  font-family: 'Arial', sans-serif;
+  color: var(--color-muted-foreground);
+  font-size: 0.9em;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.notebook-metadata {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  font-size: 0.8em;
+  color: var(--color-muted-foreground);
+}
+
+.notebook-metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Spiral binding effect */
+.notebook-container {
+  position: relative;
+  padding-left: 40px;
+}
+
+.notebook-container::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 10px,
+    var(--color-muted-foreground) 10px,
+    var(--color-muted-foreground) 12px,
+    transparent 12px,
+    transparent 20px
+  );
+}
+
+/* Page torn effect */
+.notebook-card-torn {
+  position: relative;
+  overflow: hidden;
+}
+
+.notebook-card-torn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 4"><path d="M0,2 Q2,0 4,2 T8,2 T12,2 T16,2 T20,2 T24,2 T28,2 T32,2 T36,2 T40,2 T44,2 T48,2 T52,2 T56,2 T60,2 T64,2 T68,2 T72,2 T76,2 T80,2 T84,2 T88,2 T92,2 T96,2 T100,2" stroke="none" fill="%231a1a1a"/></svg>') repeat-x;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+}

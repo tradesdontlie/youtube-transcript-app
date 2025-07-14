@@ -1,0 +1,13 @@
+[build]
+rustflags = [
+    "-C", "link-arg=-isysroot",
+    "-C", "link-arg=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+    "-C", "link-arg=-framework",
+    "-C", "link-arg=ApplicationServices"
+]
+
+[env]
+SDKROOT = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+CPATH = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+CFLAGS = "-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+CXXFLAGS = "-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
